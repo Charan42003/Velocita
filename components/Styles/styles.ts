@@ -5,19 +5,19 @@ export const nav = StyleSheet.create({
     navWrap: {
         position: 'absolute',
         bottom: 10,
-        padding: 15,
-        width: '94%',
-        marginHorizontal: '3%',
+        padding: 10,
+        width: '96%',
+        marginHorizontal: '2%',
         backgroundColor: color.primary,
-        borderRadius: 50,
+        borderRadius: 20,
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-evenly',
         alignItems: 'center'
     },
     icons: {
-        fontSize: 36,
-        color: color.greyLight,
+        fontSize: 30,
+        color: '#fff',
         paddingVertical: 8,
         paddingHorizontal: 10,
     },
@@ -27,9 +27,19 @@ export const nav = StyleSheet.create({
         borderRadius: 50,
         paddingVertical: 8,
         paddingHorizontal: 10,
-        borderWidth: 3,
-        display: "flex",
-        justifyContent: 'center',
-        alignItems: 'center'
+    }
+})
+
+export const search = StyleSheet.create({
+    pickupSearch: {
+        position: 'absolute',
+        top: 26,
+        width: '94%',
+        marginHorizontal: '3%',
+        overflow: 'hidden',
+        borderRadius: 30,
+        height: 50,
+        backgroundColor: '#fff',
+        paddingLeft: 25
     }
 })

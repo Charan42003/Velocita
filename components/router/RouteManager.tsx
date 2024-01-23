@@ -14,9 +14,9 @@ const RouteManager = () => {
             <Stack.Navigator
                 initialRouteName='Home'
             >
-                <Stack.Screen name="Home" component={Home} />
-                <Stack.Screen name="AmbulanceHome" component={AmbulanceHome} />
-                <Stack.Screen name="VehicleHome" component={VehicleHome} />
+                <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
+                <Stack.Screen name="AmbulanceHome" component={AmbulanceHome} options={{ headerShown: false }} />
+                <Stack.Screen name="VehicleHome" component={VehicleHome} options={{ headerShown: false }} />
             </Stack.Navigator>
         </NavigationContainer>
     )

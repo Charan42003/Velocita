@@ -5,13 +5,21 @@ import * as Location from 'expo-location'
 import { getLocationAsync, isOnRoadPath } from '../../api/locationService';
 import { NavigationProp } from '@react-navigation/native'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import { nav } from '../Styles/styles';
+import { nav, search } from '../Styles/styles';
 import { color } from '../../constants/colors';
+import MapViewDirections from 'react-native-maps-directions';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 const AmbulanceHome = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [mapRegion, setMapRegion] = useState({
         latitude: 13.0148065,
         longitude: 77.7062458,
+        latitudeDelta: 0.05,
+        longitudeDelta: 0.04,
+    })
+    const [destination, setDestination] = useState({
+        latitude: 13.0407259,
+        longitude: 77.692543,
         latitudeDelta: 0.05,
         longitudeDelta: 0.04,
     })
@@ -74,14 +82,54 @@ const AmbulanceHome = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     >
                     </View>
                 </Marker>
+                <Marker coordinate={destination} title="Marker">
+                    <View
+                        style={{
+                            backgroundColor: '#fff',
+                            borderRadius: 50,
+                            padding: 5,
+                            borderColor: 'red',
+                            borderWidth: 6
+                        }}
+                    >
+                    </View>
+                </Marker>
+
+                {/* Direction view  */}
+                <MapViewDirections
+                    origin={mapRegion}
+                    destination={destination}
+                    // apikey={''}
+                    apikey={''}
+                    strokeWidth={5}
+                    mode='DRIVING'
+                    strokeColor={color.secondary}
+                />
             </MapView>
             {/* Map View End  */}
+
+            {/* Search places Start  */}
+            <View style={search.pickupSearch}>
+                <GooglePlacesAutocomplete
+                    placeholder='Search'
+                    onPress={(data, details = null) => {
+                        // 'details' is provided when fetchDetails = true
+                        console.log(data, details);
+                    }}
+                    query={{
+                        // key: '',
+                        key: '',
+                        language: 'en',
+                    }}
+                />
+            </View>
+            {/* Search places End  */}
+
 
             {/* Bottom Nav Start  */}
             <View style={nav.navWrap}>
                 <TouchableOpacity>
                     <Icon name="home" style={[nav.icons, nav.selected]} />
-                    <View style={{ padding: 13 }}></View>
                 </TouchableOpacity>
                 <TouchableOpacity>
                     <Icon name="compass" style={nav.icons} />
@@ -100,7 +148,7 @@ const AmbulanceHome = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
 
             {/* Temp Components  */}
-            <TouchableOpacity
+            {/* <TouchableOpacity
                 style={{
                     position: 'absolute',
                     top: 10,
@@ -113,7 +161,7 @@ const AmbulanceHome = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 }}
                 onPress={() => navigation.navigate("Home")}
             >
-            </TouchableOpacity>
+            </TouchableOpacity> */}
         </View>
     );
 }

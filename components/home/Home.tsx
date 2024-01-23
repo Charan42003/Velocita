@@ -1,6 +1,7 @@
-import { View, Text, Button } from 'react-native'
+import { View, Text, Button, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { NavigationProp } from '@react-navigation/native'
+import { color } from '../../constants/colors'
 
 const Home = ({ navigation }: { navigation: NavigationProp<any> }) => {
     return (
@@ -12,18 +13,46 @@ const Home = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 justifyContent: 'center',
             }}
         >
-            <Text>Home</Text>
-            <Button
-                title='Ambulance'
+            <TouchableOpacity
                 onPress={() => navigation.navigate("AmbulanceHome")}
-            />
-            <View style={{
-                marginTop: 5
-            }}></View>
-            <Button
-                title='Vehicle'
+                style={{
+                    backgroundColor: color.secondary,
+                    borderBottomRightRadius: 50,
+                    borderBottomLeftRadius: 50,
+                    flex: 4,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '100%',
+                    elevation: 6,
+                    shadowColor: color.primary
+                }}
+            >
+                <Text
+                    style={{
+                        fontSize: 35,
+                        fontWeight: 'bold',
+                        color: '#fff'
+                    }}
+                >Ambulance</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
                 onPress={() => navigation.navigate("VehicleHome")}
-            />
+                style={{
+                    backgroundColor: '#fff',
+                    flex: 2,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '100%',
+                }}
+            >
+                <Text
+                    style={{
+                        fontSize: 35,
+                        fontWeight: 'bold',
+                        color: color.primary
+                    }}
+                >Vehicle</Text>
+            </TouchableOpacity>
         </View>
     )
 }
