@@ -1,6 +1,7 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { View, Text, Button, Alert } from 'react-native'
+import React, { useEffect } from 'react'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import { clickk } from '../../api/socketService';
 
 const VehicleHome = () => {
     return (
@@ -8,7 +9,7 @@ const VehicleHome = () => {
             style={
                 {
                     flex: 1,
-                    backgroundColor: 'red',
+                    backgroundColor: 'grey',
                     alignItems: 'center',
                     justifyContent: 'center',
                     width: '100%',
@@ -17,6 +18,10 @@ const VehicleHome = () => {
             }
         >
             <Text>VehicleHome</Text>
+            <Button
+                title='click me'
+                onPress={() => clickk()}
+            />
             <View>
                 <GooglePlacesAutocomplete
                     placeholder='Search'
@@ -33,6 +38,7 @@ const VehicleHome = () => {
                     enablePoweredByContainer={false}
                 />
             </View>
+
         </View>
     )
 }

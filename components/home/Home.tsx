@@ -22,6 +22,8 @@ const Home = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     flex: 4,
                     justifyContent: 'center',
                     alignItems: 'center',
+                    position: 'relative',
+                    zIndex: 333,
                     width: '100%',
                     elevation: 6,
                     shadowColor: color.primary

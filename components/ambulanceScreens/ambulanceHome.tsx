@@ -9,8 +9,11 @@ import { nav, search } from '../Styles/styles';
 import { color } from '../../constants/colors';
 import MapViewDirections from 'react-native-maps-directions';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import { useDispatch } from 'react-redux';
+import { setOrigin, setDestination } from '../../redux/slices/navSlice';
 
 const AmbulanceHome = ({ navigation }: { navigation: NavigationProp<any> }) => {
+    const dispatch = useDispatch()
     const [mapRegion, setMapRegion] = useState({
         latitude: 13.0148065,
         longitude: 77.7062458,
@@ -109,20 +112,39 @@ const AmbulanceHome = ({ navigation }: { navigation: NavigationProp<any> }) => {
             {/* Map View End  */}
 
             {/* Search places Start  */}
-            <View style={search.pickupSearch}>
-                <GooglePlacesAutocomplete
-                    placeholder='Search'
-                    onPress={(data, details = null) => {
-                        // 'details' is provided when fetchDetails = true
-                        console.log(data, details);
-                    }}
-                    query={{
-                        // key: '',
-                        key: '',
-                        language: 'en',
-                    }}
-                />
-            </View>
+            {/* <View style={search.pickupSearch}> */}
+            <GooglePlacesAutocomplete
+                placeholder='Search'
+                styles={{
+                    container: {
+                        flex: 0,
+                        position: 'absolute',
+                        top: 60,
+                        left: 0,
+                        marginHorizontal: "3%",
+                        width: '94%'
+                    },
+                    textInput: {
+                        fontSize: 18,
+                        borderColor: color.secondary,
+                        borderWidth: 2,
+                    }
+                }}
+                nearbyPlacesAPI='GooglePlacesSearch'
+                enablePoweredByContainer={false}
+                onPress={(data, details = null) => {
+                    // dispatch(setOrigin({
+                    //     location: details?.place_id
+                    // }))
+                    console.log(details)
+                    console.log(data)
+                }}
+                query={{
+                    key: '',
+                    language: 'en',
+                }}
+            />
+            {/* </View> */}
             {/* Search places End  */}
 
 
