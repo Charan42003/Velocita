@@ -8,8 +8,8 @@ import { nav, search } from '../Styles/styles';
 import { color } from '../../constants/colors';
 import MapViewDirections from 'react-native-maps-directions';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import { useDispatch } from 'react-redux';
-import { setOrigin, setDestination } from '../../redux/slices/navSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { setOrigin, setDestination, selectOriginn } from '../../redux/slices/navSlice';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MAP_KEY } from '../../constants/key';
 
@@ -161,7 +161,7 @@ const AmbulanceHome = ({ navigation }: { navigation: NavigationProp<any> }) => {
                         console.log(details.place_id)
                         // console.log(`${latitude}, ${longitude}`)
                         const fetchCoordinates = async () => {
-
+                            console.log("Hello")
                             const apiUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${details.place_id}&key=${MAP_KEY}`;
                             try {
                                 const response = await fetch(apiUrl);
@@ -169,6 +169,19 @@ const AmbulanceHome = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                 const coordinates = placeDetails.result.geometry.location;
                                 console.log("Latitude:", coordinates.lat);
                                 console.log("Longitude:", coordinates.lng);
+                                setOrigin({
+                                    latitude: coordinates.lat,
+                                    longitude: coordinates.lng,
+                                    latitudeDelta: 0.008,
+                                    longitudeDelta: 0.007,
+                                })
+                                dispatch(selectOriginn({
+                                    latitude: coordinates.lat,
+                                    longitude: coordinates.lng,
+                                }))
+                                const one = useSelector((state) => state.nav.originn);
+                                console.log("939393")
+                                console.log(one)
                             } catch (error) {
                                 console.error("Error fetching coordinates:", error);
                             }
