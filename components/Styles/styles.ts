@@ -1,6 +1,36 @@
 import { StyleSheet } from "react-native";
 import { color } from "../../constants/colors";
 
+
+export const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: 'red',
+        position: 'relative',
+    },
+    map: {
+        width: '100%',
+        height: '100%',
+    },
+    touch: {
+        position: 'absolute',
+        bottom: 20,
+        zIndex: 333,
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: "center",
+        gap: 30,
+    },
+    txt: {
+        fontSize: 20,
+        color: 'white',
+        backgroundColor: "#bd0808e8",
+        borderRadius: 20,
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+    }
+});
 export const nav = StyleSheet.create({
     navWrap: {
         position: 'absolute',

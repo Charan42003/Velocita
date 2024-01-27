@@ -4,9 +4,12 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const clickk = async () => {
-    const jsonValue = await AsyncStorage.getItem('my-key');
+    const jsonValue = await AsyncStorage.getItem('Origin');
     const aa = jsonValue != null ? JSON.parse(jsonValue) : null;
     console.log(aa)
+    const jsonValue1 = await AsyncStorage.getItem('Destination');
+    const aa1 = jsonValue1 != null ? JSON.parse(jsonValue1) : null;
+    console.log(aa1)
 }
 
 const VehicleHome = () => {
