@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import * as Location from 'expo-location'
 import { getLocationAsync, isOnRoadPath } from '../../api/locationService';
 import { NavigationProp } from '@react-navigation/native'
 import Icon from 'react-native-vector-icons/FontAwesome'
@@ -11,20 +10,22 @@ import MapViewDirections from 'react-native-maps-directions';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { useDispatch } from 'react-redux';
 import { setOrigin, setDestination } from '../../redux/slices/navSlice';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { MAP_KEY } from '../../constants/key';
 
 const AmbulanceHome = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const dispatch = useDispatch()
-    const [mapRegion, setMapRegion] = useState({
-        latitude: 13.0148065,
-        longitude: 77.7062458,
-        latitudeDelta: 0.05,
-        longitudeDelta: 0.04,
+    const [origin, setOrigin] = useState({
+        latitude: 0,
+        longitude: 0,
+        latitudeDelta: 0.008,
+        longitudeDelta: 0.007,
     })
     const [destination, setDestination] = useState({
-        latitude: 13.0407259,
-        longitude: 77.692543,
-        latitudeDelta: 0.05,
-        longitudeDelta: 0.04,
+        latitude: 0,
+        longitude: 0,
+        latitudeDelta: 0.008,
+        longitudeDelta: 0.007,
     })
     const [name, setName] = useState("name")
 
@@ -33,19 +34,16 @@ const AmbulanceHome = ({ navigation }: { navigation: NavigationProp<any> }) => {
             const location = await getLocationAsync();
             if (!location) return;
             const { latitude, longitude } = location;
-            let response = await Location.reverseGeocodeAsync({
-                latitude: latitude,
-                longitude: longitude,
-            })
+
             const current_location = {
                 coordinates: {
                     latitude: latitude,
                     longitude: longitude,
-                    pincode: response[0].postalCode
+                    pincode: 560087
                 }
             }
 
-            setMapRegion({
+            setOrigin({
                 latitude: latitude,
                 longitude: longitude,
                 latitudeDelta: 0.008,
@@ -69,121 +67,161 @@ const AmbulanceHome = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     return (
         <View style={styles.container}>
-            {/* Map View Start  */}
-            <MapView style={styles.map}
-                region={mapRegion}
-            >
-                <Marker coordinate={mapRegion} title="Marker">
-                    <View
-                        style={{
-                            backgroundColor: '#fff',
-                            borderRadius: 50,
-                            padding: 5,
-                            borderColor: color.green,
-                            borderWidth: 6
-                        }}
-                    >
-                    </View>
-                </Marker>
-                <Marker coordinate={destination} title="Marker">
-                    <View
-                        style={{
-                            backgroundColor: '#fff',
-                            borderRadius: 50,
-                            padding: 5,
-                            borderColor: 'red',
-                            borderWidth: 6
-                        }}
-                    >
-                    </View>
-                </Marker>
+            <SafeAreaView>
+                {/* Map View Start  */}
+                <MapView style={styles.map}
+                    region={origin}
+                // mapType={MapType.satellite}
+                >
+                    <Marker coordinate={origin} title="Marker">
+                        {/* <View
+                            style={{
+                                backgroundColor: '#fff',
+                                borderRadius: 50,
+                                padding: 5,
+                                borderColor: color.green,
+                                borderWidth: 6
+                            }}
+                        >
+                        </View> */}
+                        <Image
+                            source={require('../../assets/originMarker.png')}
+                            style={{
+                                width: 35,
+                                height: 35,
+                                resizeMode: 'contain'
+                            }}
+                        />
+                    </Marker>
+                    <Marker coordinate={destination} title="Marker">
+                        {/* <View
+                            style={{
+                                backgroundColor: '#fff',
+                                borderRadius: 50,
+                                padding: 5,
+                                borderColor: 'red',
+                                borderWidth: 6
+                            }}
+                        >
+                        </View> */}
+                        <Image
+                            source={require('../../assets/originMarker1.png')}
+                            style={{
+                                width: 35,
+                                height: 35,
+                                resizeMode: 'contain'
+                            }}
+                        />
+                    </Marker>
 
-                {/* Direction view  */}
-                <MapViewDirections
-                    origin={mapRegion}
-                    destination={destination}
-                    // apikey={''}
-                    apikey={''}
-                    strokeWidth={5}
-                    mode='DRIVING'
-                    strokeColor={color.secondary}
-                />
-            </MapView>
-            {/* Map View End  */}
-
-            {/* Search places Start  */}
-            {/* <View style={search.pickupSearch}> */}
-            <GooglePlacesAutocomplete
-                placeholder='Search'
-                styles={{
-                    container: {
-                        flex: 0,
-                        position: 'absolute',
-                        top: 60,
-                        left: 0,
-                        marginHorizontal: "3%",
-                        width: '94%'
-                    },
-                    textInput: {
-                        fontSize: 18,
-                        borderColor: color.secondary,
-                        borderWidth: 2,
+                    {/* Direction view  */}
+                    {
+                        (origin.longitude != 0 && destination.longitude != 0) && (
+                            <MapViewDirections
+                                origin={origin}
+                                destination={destination}
+                                apikey={MAP_KEY}
+                                strokeWidth={5}
+                                mode='DRIVING'
+                                strokeColor={color.secondary}
+                            />
+                        )
                     }
-                }}
-                nearbyPlacesAPI='GooglePlacesSearch'
-                enablePoweredByContainer={false}
-                onPress={(data, details = null) => {
-                    // dispatch(setOrigin({
-                    //     location: details?.place_id
-                    // }))
-                    console.log(details)
-                    console.log(data)
-                }}
-                query={{
-                    key: '',
-                    language: 'en',
-                }}
-            />
-            {/* </View> */}
-            {/* Search places End  */}
+
+                </MapView>
+                {/* Map View End  */}
+
+                {/* Search places Start  */}
+                {/* <View style={search.pickupSearch}> */}
+                <GooglePlacesAutocomplete
+                    placeholder='Your current location'
+                    styles={{
+                        container: {
+                            flex: 0,
+                            position: 'absolute',
+                            top: 10,
+                            left: 0,
+                            marginHorizontal: "3%",
+                            width: '94%'
+                        },
+                        textInput: {
+                            fontSize: 18,
+                            height: 50,
+                            borderRadius: 30,
+                            elevation: 6,
+                            shadowColor: color.primary,
+                            paddingLeft: 30
+                        }
+                    }}
+                    nearbyPlacesAPI='GooglePlacesSearch'
+                    enablePoweredByContainer={false}
+                    onPress={(data, details) => {
+                        const latitude = details.geometry.location.lat;
+                        const longitude = details.geometry.location.lng;
+                        console.log(details)
+                        console.log(`${latitude}, ${longitude}`)
+                    }}
+                    query={{
+                        key: MAP_KEY,
+                        language: 'en',
+                    }}
+                />
+                <GooglePlacesAutocomplete
+                    placeholder='Search Destination'
+                    styles={{
+                        container: {
+                            flex: 0,
+                            position: 'absolute',
+                            bottom: 80,
+                            left: 0,
+                            marginHorizontal: "3%",
+                            width: '94%'
+                        },
+                        textInput: {
+                            fontSize: 18,
+                            height: 50,
+                            borderRadius: 30,
+                            elevation: 6,
+                            shadowColor: color.primary,
+                            paddingLeft: 30
+                        }
+                    }}
+                    nearbyPlacesAPI='GooglePlacesSearch'
+                    enablePoweredByContainer={false}
+                    onPress={(data, details = null) => {
+                        // dispatch(setOrigin({
+                        //     location: details?.place_id
+                        // }))
+                        console.log(details)
+                        console.log(data)
+                    }}
+                    query={{
+                        key: '',
+                        language: 'en',
+                    }}
+                />
+                {/* </View> */}
+                {/* Search places End  */}
 
 
-            {/* Bottom Nav Start  */}
-            <View style={nav.navWrap}>
-                <TouchableOpacity>
-                    <Icon name="home" style={[nav.icons, nav.selected]} />
-                </TouchableOpacity>
-                <TouchableOpacity>
-                    <Icon name="compass" style={nav.icons} />
-                </TouchableOpacity>
-                <TouchableOpacity>
-                    <Icon name="comments" style={nav.icons} />
-                </TouchableOpacity>
-                <TouchableOpacity>
-                    <Icon name="user" style={nav.icons} />
-                </TouchableOpacity>
-            </View>
-            {/* Bottom Nav End  */}
-
-
-
-
-
-            {/* Temp Components  */}
-            {/* <TouchableOpacity
-                style={{
-                    position: 'absolute',
-                    top: 10,
-                    left: 10,
-                    padding: 5,
-                    backgroundColor: color.green,
-                    borderRadius: 50,
-                    borderColor: color.primary,
-                    borderWidth: 5
-                }}
-                onPress={() => navigation.navigate("Home")}
-            >
-            </TouchableOpacity> */}
+                {/* Bottom Nav Start  */}
+                <View style={nav.navWrap}>
+                    <TouchableOpacity>
+                        <Icon name="home" style={[nav.icons, nav.selected]} />
+                    </TouchableOpacity>
+                    <TouchableOpacity>
+                        <Icon name="compass" style={nav.icons} />
+                    </TouchableOpacity>
+                    <TouchableOpacity>
+                        <Icon name="comments" style={nav.icons} />
+                    </TouchableOpacity>
+                    <TouchableOpacity>
+                        <Icon name="user" style={nav.icons} />
+                    </TouchableOpacity>
+                </View>
+                {/* Bottom Nav End  */}
+            </SafeAreaView>
+            <StatusBar backgroundColor={color.primary} />
         </View>
     );
 }
