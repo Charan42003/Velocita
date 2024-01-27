@@ -14,7 +14,7 @@ const Home = ({ navigation }: { navigation: NavigationProp<any> }) => {
             }}
         >
             <TouchableOpacity
-                onPress={() => navigation.navigate("AmbulanceHome")}
+                onPress={() => navigation.navigate("OriginScreen")}
                 style={{
                     backgroundColor: color.secondary,
                     borderBottomRightRadius: 50,

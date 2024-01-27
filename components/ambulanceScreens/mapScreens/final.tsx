@@ -1,21 +1,28 @@
 import React, { useState, useEffect } from 'react'
 import { Image, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import { getLocationAsync, isOnRoadPath } from '../../../api/locationService';
-import { NavigationProp } from '@react-navigation/native'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import { nav, search, styles } from '../../Styles/styles';
+import { nav, popup, search, styles } from '../../Styles/styles';
 import { color } from '../../../constants/colors';
 import MapViewDirections from 'react-native-maps-directions';
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import { useDispatch, useSelector } from 'react-redux';
-// import { setOrigin, setDestination, selectOriginn } from '../../redux/slices/navSlice';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MAP_KEY } from '../../../constants/key';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import LottieView from 'lottie-react-native'
+import { NavigationProp } from '@react-navigation/native';
+import { BlurView } from 'expo-blur'
+import { io } from 'socket.io-client';
+
+const socket = io("http://54.91.227.18:8081/");
 
 
-const FinalMap = () => {
+
+
+const FinalMap = ({ navigation }: { navigation: NavigationProp<any> }) => {
+
+    socket.on("connect", () => {
+        console.log(socket.id);
+    });
     const [origin, setOrigin] = useState({
         latitude: 0,
         longitude: 0,
@@ -28,39 +35,57 @@ const FinalMap = () => {
         latitudeDelta: 0.008,
         longitudeDelta: 0.007,
     })
+    const [scaleval, setScaleval] = useState("flex")
+    const [loaded, setLoaded] = useState(false)
 
-    useState(async () => {
-        const jsonValue = await AsyncStorage.getItem('Origin');
-        const d = jsonValue != null ? JSON.parse(jsonValue) : null;
-        console.log(d)
-        console.log(d.latitude)
-        console.log(d.longitude)
-        setDestination({
-            latitude: d.la,
-            longitude: 0,
-            latitudeDelta: 0.008,
-            longitudeDelta: 0.007,
-        })
-    })
+    useEffect(() => {
+        const final = async () => {
+            const jsonValue = await AsyncStorage.getItem('Origin');
+            const o = jsonValue != null ? JSON.parse(jsonValue) : null;
+            const jsonValue1 = await AsyncStorage.getItem('Destination');
+            const d = jsonValue1 != null ? JSON.parse(jsonValue1) : null;
+            setOrigin({
+                latitude: o.latitude,
+                longitude: o.longitude,
+                latitudeDelta: 0.008,
+                longitudeDelta: 0.007,
+            })
+            setDestination({
+                latitude: d.latitude,
+                longitude: d.longitude,
+                latitudeDelta: 0.008,
+                longitudeDelta: 0.007,
+            })
+        }
+        final()
+    }, [])
 
     return (
-        <View>
+        <View style={styles.container}>
+            {/* Preloader start */}
+            <LottieView
+                source={require("../../../assets/loader.json")}
+                style={{
+                    width: "100%",
+                    height: "100%",
+                    backgroundColor: color.secondary,
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    zIndex: 55,
+                    display: loaded ? 'none' : 'flex'
+                }}
+                autoPlay
+                loop
+            />
+            {/* Preloader End */}
+
             {/* Map View Start  */}
             <MapView style={styles.map}
                 region={origin}
             // mapType={MapType.satellite}
             >
                 <Marker coordinate={origin} title="Marker">
-                    {/* <View
-                            style={{
-                                backgroundColor: '#fff',
-                                borderRadius: 50,
-                                padding: 5,
-                                borderColor: color.green,
-                                borderWidth: 6
-                            }}
-                        >
-                        </View> */}
                     <Image
                         source={require('../../../assets/originMarker.png')}
                         style={{
@@ -71,16 +96,6 @@ const FinalMap = () => {
                     />
                 </Marker>
                 <Marker coordinate={destination} title="Marker">
-                    {/* <View
-                            style={{
-                                backgroundColor: '#fff',
-                                borderRadius: 50,
-                                padding: 5,
-                                borderColor: 'red',
-                                borderWidth: 6
-                            }}
-                        >
-                        </View> */}
                     <Image
                         source={require('../../../assets/originMarker1.png')}
                         style={{
@@ -99,8 +114,10 @@ const FinalMap = () => {
                             destination={destination}
                             apikey={MAP_KEY}
                             strokeWidth={5}
-                            mode='DRIVING'
                             strokeColor={color.secondary}
+                            onReady={() => {
+                                setLoaded(true)
+                            }}
                         />
                     )
                 }
@@ -108,67 +125,57 @@ const FinalMap = () => {
             </MapView>
             {/* Map View End  */}
 
-            {/* Search places Start  */}
-            {/* <View style={search.pickupSearch}> */}
-            <GooglePlacesAutocomplete
-                placeholder='Your current location'
-                styles={{
-                    container: {
-                        flex: 0,
+            {/* Popup screen */}
+            <View style={{ ...popup.popupWrap, display: scaleval }}>
+                <BlurView intensity={120}
+                    style={{
+                        width: '100%',
+                        height: '100%',
                         position: 'absolute',
-                        top: 10,
+                        top: 0,
                         left: 0,
-                        marginHorizontal: "3%",
-                        width: '94%'
-                    },
-                    textInput: {
-                        fontSize: 18,
-                        height: 50,
-                        borderRadius: 30,
-                        elevation: 6,
-                        shadowColor: color.primary,
-                        paddingLeft: 30
-                    }
-                }}
-                nearbyPlacesAPI='GooglePlacesSearch'
-                enablePoweredByContainer={false}
-                onPress={(data, details) => {
-                    // const latitude = details.geometry.location.lat;
-                    // const longitude = details.geometry.location.lng;
-                    console.log(details.place_id)
-                    // console.log(`${latitude}, ${longitude}`)
-                    const fetchCoordinates = async () => {
-                        console.log("Hello")
-                        const apiUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${details.place_id}&key=${MAP_KEY}`;
-                        try {
-                            const response = await fetch(apiUrl);
-                            const placeDetails = await response.json();
-                            const coordinates = placeDetails.result.geometry.location;
-                            console.log("Latitude:", coordinates.lat);
-                            console.log("Longitude:", coordinates.lng);
-                            setOrigin({
-                                latitude: coordinates.lat,
-                                longitude: coordinates.lng,
-                                latitudeDelta: 0.008,
-                                longitudeDelta: 0.007,
-                            })
-                            const jsonValue = JSON.stringify(origin);
-                            await AsyncStorage.setItem('Origin', jsonValue);
+                    }}
+                >
+                </BlurView>
+                <View style={popup.card}>
+                    <Text style={popup.cardTitle}>Generate Alert</Text>
+                    <TouchableOpacity
+                        style={{ ...popup.cardBtn }}
+                        onPress={() => {
+                            setScaleval("none")
+                        }}
+                    >
+                        <Text style={popup.cardBtnTxt}>Okay</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
 
-
-                        } catch (error) {
-                            console.error("Error fetching coordinates:", error);
-                        }
-                    };
-                    fetchCoordinates()
-                }}
-                query={{
-                    key: MAP_KEY,
-                    language: 'en',
-                }}
-            />
-            {/* </View> */}
             {/* Search places End  */}
+            <SafeAreaView>
+                {/* Bottom Nav Start  */}
+                <View style={nav.navWrap}>
+                    <TouchableOpacity
+                        onPress={async () => {
+                            await AsyncStorage.removeItem('Destination')
+                            await AsyncStorage.removeItem('Origin')
+                            navigation.navigate('Home')
+                        }}
+                    >
+                        <Icon name="home" style={[nav.icons, nav.selected]} />
+                    </TouchableOpacity>
+                    <TouchableOpacity>
+                        <Icon name="compass" style={nav.icons} />
+                    </TouchableOpacity>
+                    <TouchableOpacity>
+                        <Icon name="comments" style={nav.icons} />
+                    </TouchableOpacity>
+                    <TouchableOpacity>
+                        <Icon name="user" style={nav.icons} />
+                    </TouchableOpacity>
+                </View>
+                {/* Bottom Nav End  */}
+            </SafeAreaView>
+            <StatusBar backgroundColor={loaded ? color.primary : color.secondary} />
         </View>
     )
 }

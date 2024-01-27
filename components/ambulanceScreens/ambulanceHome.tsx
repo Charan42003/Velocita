@@ -21,50 +21,14 @@ import FinalMap from './mapScreens/final';
 
 const AmbulanceHome = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
-    const [origin, setOrigin] = useState({
-        latitude: 0,
-        longitude: 0,
-        latitudeDelta: 0.008,
-        longitudeDelta: 0.007,
-    })
-    const [destination, setDestination] = useState({
-        latitude: 0,
-        longitude: 0,
-        latitudeDelta: 0.008,
-        longitudeDelta: 0.007,
-    })
-    const [name, setName] = useState("name")
-    const Stack = createNativeStackNavigator()
     useEffect(() => {
-        const handleLocationChange = async (name: string) => {
-            const location = await getLocationAsync();
-            if (!location) return;
-            const { latitude, longitude } = location;
 
-            const current_location = {
-                coordinates: {
-                    latitude: latitude,
-                    longitude: longitude,
-                    pincode: 560087
-                }
-            }
-
-            setOrigin({
-                latitude: latitude,
-                longitude: longitude,
-                latitudeDelta: 0.008,
-                longitudeDelta: 0.007,
-            })
-
-            // console.log(`(amb.) ${na} ↓`)
-            // console.log(current_location)
-        };
+    }, []);
 
 
-        // Set up location tracking
-        const locationTask = setInterval(() => handleLocationChange(name), 10000);
-        return () => clearInterval(locationTask);
-    }, [name]);
+    const [originScreen, setOriginScreen] = useState(true)
+    const [destinationScreen, setDestinationScreen] = useState(false)
+    const [FinalMapScreen, setFinalMapScreen] = useState(false)
 
 
     const ambulanceAlert = (msg: string) => {
@@ -73,21 +37,8 @@ const AmbulanceHome = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
     return (
         <View style={styles.container}>
+
             <SafeAreaView>
-                {/* <OriginMap /> */}
-                {/* <DestinationMap /> */}
-                {/* <FinalMap /> */}
-
-                <NavigationContainer>
-                    <Stack.Navigator
-                        initialRouteName='Home'
-                    >
-                        <Stack.Screen name="OriginMap" component={OriginMap} options={{ headerShown: false }} />
-                        <Stack.Screen name="DestinationMap" component={DestinationMap} options={{ headerShown: false }} />
-                        <Stack.Screen name="FinalMap" component={FinalMap} options={{ headerShown: false }} />
-                    </Stack.Navigator>
-                </NavigationContainer>
-
                 {/* Bottom Nav Start  */}
                 <View style={nav.navWrap}>
                     <TouchableOpacity>

@@ -11,20 +11,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MAP_KEY } from '../../constants/key';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LottieView from "lottie-react-native"
-// import { schedulePushNotification } from '../../api/notificationServices';
-import * as Notifications from "expo-notifications";
 
 
-Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: true,
-        shouldSetBadge: true,
-    }),
-});
-
-
-const VehicleHome = ({ navigation }: { navigation: NavigationProp<any> }) => {
+const NearByAmbulance = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [origin, setOrigin] = useState({
         latitude: 0,
         longitude: 0,
@@ -84,14 +73,13 @@ const VehicleHome = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     loop
                 />
                 {/* Preloader End */}
-
                 {/* Map View Start  */}
                 <MapView style={styles.map}
                     region={origin}
                 >
                     <Marker coordinate={origin} title="Marker">
                         <Image
-                            source={require('../../assets/originMarker.png')}
+                            source={require('../../assets/originMarker1.png')}
                             style={{
                                 width: 35,
                                 height: 35,
@@ -110,18 +98,14 @@ const VehicleHome = ({ navigation }: { navigation: NavigationProp<any> }) => {
                         <TouchableOpacity
                             onPress={() => navigation.navigate('VehicleHome')}
                         >
-                            <Icon name="home" style={[nav.icons, nav.selected]} />
+                            <Icon name="home" style={nav.icons} />
                         </TouchableOpacity>
                         <TouchableOpacity
                             onPress={() => navigation.navigate('NearByAmbulance')}
                         >
-                            <Icon name="search" style={nav.icons} />
+                            <Icon name="search" style={[nav.icons, nav.selected]} />
                         </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={() =>
-                                schedulePushNotification("Alert!!", "Ambulance is on the way")
-                            }
-                        >
+                        <TouchableOpacity>
                             <Icon name="comments" style={nav.icons} />
                         </TouchableOpacity>
                         <TouchableOpacity>
@@ -132,20 +116,8 @@ const VehicleHome = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 </SafeAreaView>
                 <StatusBar backgroundColor={loaded ? color.primary : color.secondary} />
             </SafeAreaView>
-        </View >
+        </View>
     )
 }
 
-export async function schedulePushNotification(title, body) {
-    await Notifications.scheduleNotificationAsync({
-        content: {
-            title: title,
-            body: body,
-            data: { data: "goes here" },
-            // icon: require('')
-        },
-        trigger: { seconds: 1 },
-    });
-}
-
-export default VehicleHome
+export default NearByAmbulance

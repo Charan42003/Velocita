@@ -6,16 +6,14 @@ import { NavigationProp } from '@react-navigation/native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { nav, search, styles } from '../../Styles/styles';
 import { color } from '../../../constants/colors';
-import MapViewDirections from 'react-native-maps-directions';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import { useDispatch, useSelector } from 'react-redux';
-// import { setOrigin, setDestination, selectOriginn } from '../../redux/slices/navSlice';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MAP_KEY } from '../../../constants/key';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import LottieView from "lottie-react-native"
 
 
-const DestinationMap = () => {
+const DestinationMap = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [destination, setDestination] = useState({
         latitude: 0,
         longitude: 0,
@@ -23,6 +21,7 @@ const DestinationMap = () => {
         longitudeDelta: 0.007,
     })
     const [name, setName] = useState("name")
+    const [loaded, setLoaded] = useState(false)
 
     useEffect(() => {
         const handleLocationChange = async (name: string) => {
@@ -44,7 +43,7 @@ const DestinationMap = () => {
                 latitudeDelta: 0.008,
                 longitudeDelta: 0.007,
             })
-
+            setLoaded(true)
             // console.log(`(amb.) ${na} ↓`)
             // console.log(current_location)
         };
@@ -55,7 +54,25 @@ const DestinationMap = () => {
         return () => clearInterval(locationTask);
     }, [name]);
     return (
-        <View>
+        <View style={styles.container}>
+            {/* Preloader start */}
+            <LottieView
+                source={require("../../../assets/loader.json")}
+                style={{
+                    width: "100%",
+                    height: "100%",
+                    backgroundColor: color.secondary,
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    zIndex: 55,
+                    display: loaded ? 'none' : 'flex'
+                }}
+                autoPlay
+                loop
+            />
+            {/* Preloader End */}
+
             {/* Map View Start  */}
             <MapView style={styles.map}
                 region={destination}
@@ -73,6 +90,18 @@ const DestinationMap = () => {
                 </Marker>
             </MapView>
             {/* Map View End  */}
+
+            {/* Go with live location button  */}
+            <TouchableOpacity
+                style={styles.searchBtn}
+                onPress={async () => {
+                    const destinationJson = JSON.stringify(destination);
+                    await AsyncStorage.setItem('Destination', destinationJson);
+                    navigation.navigate('FinalMapScreen')
+                }}
+            >
+                <Icon name="search" style={{ color: color.greyLight, fontSize: 30 }} />
+            </TouchableOpacity>
 
             {/* Search places Start  */}
             {/* <View style={search.pickupSearch}> */}
@@ -104,23 +133,22 @@ const DestinationMap = () => {
                     console.log(details.place_id)
                     // console.log(`${latitude}, ${longitude}`)
                     const fetchCoordinates = async () => {
-                        console.log("Hello")
                         const apiUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${details.place_id}&key=${MAP_KEY}`;
                         try {
                             const response = await fetch(apiUrl);
                             const placeDetails = await response.json();
                             const coordinates = placeDetails.result.geometry.location;
-                            console.log("Latitude:", coordinates.lat);
-                            console.log("Longitude:", coordinates.lng);
-                            setDestination({
-                                latitude: coordinates.lat,
-                                longitude: coordinates.lng,
+                            const lat = coordinates.lat
+                            const lng = coordinates.lng
+                            const obj = {
+                                latitude: lat,
+                                longitude: lng,
                                 latitudeDelta: 0.008,
                                 longitudeDelta: 0.007,
-                            })
-                            const jsonValued = JSON.stringify(destination);
-                            await AsyncStorage.setItem('Destination', jsonValued);
-
+                            }
+                            const destinationJson = JSON.stringify(obj);
+                            await AsyncStorage.setItem('Destination', destinationJson);
+                            navigation.navigate('FinalMapScreen')
 
                         } catch (error) {
                             console.error("Error fetching coordinates:", error);
@@ -135,6 +163,25 @@ const DestinationMap = () => {
             />
             {/* </View> */}
             {/* Search places End  */}
+            <SafeAreaView>
+                {/* Bottom Nav Start  */}
+                <View style={nav.navWrap}>
+                    <TouchableOpacity>
+                        <Icon name="home" style={[nav.icons, nav.selected]} />
+                    </TouchableOpacity>
+                    <TouchableOpacity>
+                        <Icon name="compass" style={nav.icons} />
+                    </TouchableOpacity>
+                    <TouchableOpacity>
+                        <Icon name="comments" style={nav.icons} />
+                    </TouchableOpacity>
+                    <TouchableOpacity>
+                        <Icon name="user" style={nav.icons} />
+                    </TouchableOpacity>
+                </View>
+                {/* Bottom Nav End  */}
+            </SafeAreaView>
+            <StatusBar backgroundColor={loaded ? color.primary : color.secondary} />
         </View>
     )
 }

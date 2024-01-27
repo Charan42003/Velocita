@@ -7,5 +7,6 @@ export const color = {
     green: '#329f69', //light: 45b77e dark: 329f69
     black: '#323a57',
     grey: '#5d647b', //light: 93a8bb dark: 1f2746
-    greyLight: "#93a8bb"
+    greyLight: "#93a8bb",
+    search: "#d2d4d6"
 }
