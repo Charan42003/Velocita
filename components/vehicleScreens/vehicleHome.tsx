@@ -1,7 +1,13 @@
 import { View, Text, Button, Alert } from 'react-native'
 import React, { useEffect } from 'react'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import { clickk } from '../../api/socketService';
+import { AsyncStorage } from 'react-native';
+// import { clickk } from '../../api/socketService';
+
+const clickk = async () => {
+    const aa = await AsyncStorage.getItem(origin)
+    console.log(aa)
+}
 
 const VehicleHome = () => {
     return (

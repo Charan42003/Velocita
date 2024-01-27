@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setOrigin, setDestination, selectOriginn } from '../../redux/slices/navSlice';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MAP_KEY } from '../../constants/key';
+import { AsyncStorage } from 'react-native';
 
 const AmbulanceHome = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const dispatch = useDispatch()
@@ -175,13 +176,9 @@ const AmbulanceHome = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                     latitudeDelta: 0.008,
                                     longitudeDelta: 0.007,
                                 })
-                                dispatch(selectOriginn({
-                                    latitude: coordinates.lat,
-                                    longitude: coordinates.lng,
-                                }))
-                                const one = useSelector((state) => state.nav.originn);
-                                console.log("939393")
-                                console.log(one)
+                                AsyncStorage.setItem({ "origin": origin })
+
+
                             } catch (error) {
                                 console.error("Error fetching coordinates:", error);
                             }
@@ -190,40 +187,6 @@ const AmbulanceHome = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     }}
                     query={{
                         key: MAP_KEY,
-                        language: 'en',
-                    }}
-                />
-                <GooglePlacesAutocomplete
-                    placeholder='Search Destination'
-                    styles={{
-                        container: {
-                            flex: 0,
-                            position: 'absolute',
-                            bottom: 80,
-                            left: 0,
-                            marginHorizontal: "3%",
-                            width: '94%'
-                        },
-                        textInput: {
-                            fontSize: 18,
-                            height: 50,
-                            borderRadius: 30,
-                            elevation: 6,
-                            shadowColor: color.primary,
-                            paddingLeft: 30
-                        }
-                    }}
-                    nearbyPlacesAPI='GooglePlacesSearch'
-                    enablePoweredByContainer={false}
-                    onPress={(data, details = null) => {
-                        // dispatch(setOrigin({
-                        //     location: details?.place_id
-                        // }))
-                        console.log(details)
-                        console.log(data)
-                    }}
-                    query={{
-                        key: '',
                         language: 'en',
                     }}
                 />
