@@ -9,10 +9,10 @@ import { color } from '../../constants/colors';
 import MapViewDirections from 'react-native-maps-directions';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { useDispatch, useSelector } from 'react-redux';
-import { setOrigin, setDestination, selectOriginn } from '../../redux/slices/navSlice';
+// import { setOrigin, setDestination, selectOriginn } from '../../redux/slices/navSlice';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MAP_KEY } from '../../constants/key';
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AmbulanceHome = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const dispatch = useDispatch()
@@ -176,7 +176,8 @@ const AmbulanceHome = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                     latitudeDelta: 0.008,
                                     longitudeDelta: 0.007,
                                 })
-                                AsyncStorage.setItem({ "origin": origin })
+                                const jsonValue = JSON.stringify(origin);
+                                await AsyncStorage.setItem('Origin', jsonValue);
 
 
                             } catch (error) {

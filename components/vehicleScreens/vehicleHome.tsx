@@ -1,11 +1,11 @@
 import { View, Text, Button, Alert } from 'react-native'
 import React, { useEffect } from 'react'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import { AsyncStorage } from 'react-native';
-// import { clickk } from '../../api/socketService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const clickk = async () => {
-    const aa = await AsyncStorage.getItem(origin)
+    const jsonValue = await AsyncStorage.getItem('my-key');
+    const aa = jsonValue != null ? JSON.parse(jsonValue) : null;
     console.log(aa)
 }
 
