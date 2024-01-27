@@ -156,10 +156,24 @@ const AmbulanceHome = ({ navigation }: { navigation: NavigationProp<any> }) => {
                     nearbyPlacesAPI='GooglePlacesSearch'
                     enablePoweredByContainer={false}
                     onPress={(data, details) => {
-                        const latitude = details.geometry.location.lat;
-                        const longitude = details.geometry.location.lng;
-                        console.log(details)
-                        console.log(`${latitude}, ${longitude}`)
+                        // const latitude = details.geometry.location.lat;
+                        // const longitude = details.geometry.location.lng;
+                        console.log(details.place_id)
+                        // console.log(`${latitude}, ${longitude}`)
+                        const fetchCoordinates = async () => {
+
+                            const apiUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${details.place_id}&key=${MAP_KEY}`;
+                            try {
+                                const response = await fetch(apiUrl);
+                                const placeDetails = await response.json();
+                                const coordinates = placeDetails.result.geometry.location;
+                                console.log("Latitude:", coordinates.lat);
+                                console.log("Longitude:", coordinates.lng);
+                            } catch (error) {
+                                console.error("Error fetching coordinates:", error);
+                            }
+                        };
+                        fetchCoordinates()
                     }}
                     query={{
                         key: MAP_KEY,
